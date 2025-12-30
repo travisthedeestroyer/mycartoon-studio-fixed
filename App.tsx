@@ -76,7 +76,12 @@ const App: React.FC = () => {
   const [lastStoryContext, setLastStoryContext] = useState<string | null>(null);
   
   const [isPro, setIsPro] = useState(false); 
+  const [isUltra, setIsUltra] = useState(false);
   const [veoTrials, setVeoTrials] = useState(3);
+  const [imageGenerations, setImageGenerations] = useState(0);
+  const [lastImageGenTime, setLastImageGenTime] = useState<number>(0);
+  const [dailyVideoCount, setDailyVideoCount] = useState(0);
+  const [lastVideoResetTime, setLastVideoResetTime] = useState<number>(0);
 
   // Economy & Shop State
   const [wallet, setWallet] = useState(0);
@@ -140,6 +145,21 @@ const App: React.FC = () => {
 
     const trials = localStorage.getItem('tooncraft_veo_trials');
     if (trials) setVeoTrials(parseInt(trials, 10));
+
+    const savedIsUltra = localStorage.getItem('tooncraft_is_ultra');
+    if (savedIsUltra) setIsUltra(savedIsUltra === 'true');
+
+    const savedImageGens = localStorage.getItem('tooncraft_image_gens');
+    if (savedImageGens) setImageGenerations(parseInt(savedImageGens, 10));
+
+    const savedLastImageTime = localStorage.getItem('tooncraft_last_image_time');
+    if (savedLastImageTime) setLastImageGenTime(parseInt(savedLastImageTime, 10));
+
+    const savedDailyVideo = localStorage.getItem('tooncraft_daily_video');
+    if (savedDailyVideo) setDailyVideoCount(parseInt(savedDailyVideo, 10));
+
+    const savedLastVideoReset = localStorage.getItem('tooncraft_last_video_reset');
+    if (savedLastVideoReset) setLastVideoResetTime(parseInt(savedLastVideoReset, 10));
 
     getProjectsFromDB().then(setSavedProjects).catch(console.error);
   }, []);
@@ -232,6 +252,20 @@ const App: React.FC = () => {
   };
 
   const checkVeoAccess = (): boolean => {
+    if (isUltra) {
+        const now = Date.now();
+        if (now - lastVideoResetTime > 24 * 60 * 60 * 1000) {
+            setDailyVideoCount(0);
+            setLastVideoResetTime(now);
+            localStorage.setItem('tooncraft_daily_video', '0');
+            localStorage.setItem('tooncraft_last_video_reset', now.toString());
+        }
+        if (dailyVideoCount >= 6) {
+            setErrorMessage("You've reached your daily limit of 6 scenes. Come back tomorrow for more magic!");
+            return false;
+        }
+        return true;
+    }
     if (isPro) return true;
     if (veoTrials > 0) return true;
     setShowSubscriptionModal(true);
@@ -239,6 +273,12 @@ const App: React.FC = () => {
   };
 
   const decrementVeoTrial = () => {
+      if (isUltra) {
+          const newVal = dailyVideoCount + 1;
+          setDailyVideoCount(newVal);
+          localStorage.setItem('tooncraft_daily_video', newVal.toString());
+          return;
+      }
       if (!isPro && veoTrials > 0) {
           const newVal = veoTrials - 1;
           setVeoTrials(newVal);
@@ -307,6 +347,36 @@ const App: React.FC = () => {
 
       // HELPER: Generates the base image (NanoBanana)
       const generateBaseImage = async (index: number, refImg?: string) => {
+          // Check image generation limits
+          if (!isUltra) {
+              if (imageGenerations >= 10) {
+                  throw new Error("You've used your 10 image generations. Upgrade to Ultra for unlimited magic!");
+              }
+              const newVal = imageGenerations + 1;
+              setImageGenerations(newVal);
+              localStorage.setItem('tooncraft_image_gens', newVal.toString());
+          } else {
+              // Ultra Cooldown Logic
+              const now = Date.now();
+              if (imageGenerations >= 3) {
+                  if (now - lastImageGenTime < 24 * 60 * 60 * 1000) {
+                      throw new Error("Whoa! You've made 3 stories today. Let's take a break and come back in 24 hours for more!");
+                  } else {
+                      // Reset after 24h
+                      setImageGenerations(1);
+                      setLastImageGenTime(now);
+                      localStorage.setItem('tooncraft_image_gens', '1');
+                      localStorage.setItem('tooncraft_last_image_time', now.toString());
+                  }
+              } else {
+                  const newVal = imageGenerations + 1;
+                  setImageGenerations(newVal);
+                  setLastImageGenTime(now);
+                  localStorage.setItem('tooncraft_image_gens', newVal.toString());
+                  localStorage.setItem('tooncraft_last_image_time', now.toString());
+              }
+          }
+
           const scene = generatedScript.scenes[index];
           const img = await generateSceneImage(scene.visualDescription, userAge, refImg, false, signal);
           generatedScript.scenes[index].imageUrl = img;
@@ -582,49 +652,80 @@ const App: React.FC = () => {
 
         {showSubscriptionModal && (
             <div className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 animate-fade-in overflow-y-auto">
-                <div className="relative max-w-lg w-full bg-gradient-to-b from-indigo-900 to-black p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-yellow-500/50 shadow-2xl text-center my-auto">
-                    <button onClick={() => setShowSubscriptionModal(false)} className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white/50 hover:text-white active:text-white/70 transition-colors">
-                        <X size={20} className="sm:w-6 sm:h-6" />
-                    </button>
-                    
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg shadow-yellow-500/50">
-                        <Crown size={32} className="text-black sm:w-10 sm:h-10" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full my-auto">
+                    {/* Pro Tier */}
+                    <div className="relative bg-gradient-to-b from-indigo-900 to-black p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl text-center">
+                        <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Zap size={24} className="text-white" />
+                        </div>
+                        <h2 className="text-xl sm:text-2xl font-black mb-2 text-white">Pro Pack</h2>
+                        <p className="text-xs sm:text-sm text-indigo-200 mb-6">Great for starters!</p>
+                        <div className="space-y-3 mb-8 text-left bg-white/5 p-4 rounded-xl border border-white/5">
+                            <div className="flex items-center gap-2">
+                                <ShoppingBag className="text-yellow-400" size={16} />
+                                <span className="text-xs sm:text-sm"><strong>5,000</strong> Shop Points</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Video className="text-pink-400" size={16} />
+                                <span className="text-xs sm:text-sm"><strong>5</strong> Magic AI Videos</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="text-cyan-400" size={16} />
+                                <span className="text-xs sm:text-sm"><strong>10</strong> Image Generations</span>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => {
+                                setIsPro(true);
+                                setWallet(w => w + 5000);
+                                setVeoTrials(v => v + 5);
+                                setShowSubscriptionModal(false);
+                                alert("Pro Pack Activated! 🎉");
+                            }}
+                            className="w-full py-3 bg-white text-black rounded-full font-black text-base hover:scale-105 active:scale-95 transition-transform"
+                        >
+                            Buy for $4.99
+                        </button>
                     </div>
-                    
-                    <h2 className="text-2xl sm:text-3xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 px-4">
-                        Unlock ToonCraft Pro!
-                    </h2>
-                    <p className="text-sm sm:text-base text-indigo-200 mb-6 sm:mb-8 px-4">
-                        Ask your parents to unlock unlimited magic powers!
-                    </p>
 
-                    <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 text-left bg-white/5 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-white/5">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                            <Video className="text-pink-400 flex-shrink-0" size={18} />
-                            <span className="text-sm sm:text-base">Unlimited <strong>Magic AI Video</strong> generation</span>
+                    {/* Ultra Tier */}
+                    <div className="relative bg-gradient-to-b from-purple-900 to-black p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-yellow-500/50 shadow-2xl text-center">
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-yellow-400 text-black text-[10px] font-black px-3 py-1 rounded-full">BEST VALUE</div>
+                        <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-yellow-500/50">
+                            <Crown size={32} className="text-black" />
                         </div>
-                        <div className="flex items-center gap-2 sm:gap-3">
-                            <Sparkles className="text-cyan-400 flex-shrink-0" size={18} />
-                            <span className="text-sm sm:text-base"><strong>4K Quality</strong> Images</span>
+                        <h2 className="text-2xl sm:text-3xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500">Ultra Pack</h2>
+                        <p className="text-xs sm:text-sm text-purple-200 mb-6">The ultimate magic experience!</p>
+                        <div className="space-y-3 mb-8 text-left bg-white/5 p-4 rounded-xl border border-white/5">
+                            <div className="flex items-center gap-2">
+                                <ShoppingBag className="text-yellow-400" size={16} />
+                                <span className="text-xs sm:text-sm"><strong>10,000</strong> Shop Points</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Video className="text-pink-400" size={16} />
+                                <span className="text-xs sm:text-sm"><strong>20</strong> Magic AI Videos</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="text-cyan-400" size={16} />
+                                <span className="text-xs sm:text-sm"><strong>Unlimited</strong> Image Stories</span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2 sm:gap-3">
-                            <ShoppingBag className="text-yellow-400 flex-shrink-0" size={18} />
-                            <span className="text-sm sm:text-base">Unlock <strong>All Studio Themes</strong></span>
-                        </div>
+                        <button 
+                            onClick={() => {
+                                setIsUltra(true);
+                                setWallet(w => w + 10000);
+                                setVeoTrials(v => v + 20);
+                                localStorage.setItem('tooncraft_is_ultra', 'true');
+                                setShowSubscriptionModal(false);
+                                alert("Ultra Pack Activated! 👑");
+                            }}
+                            className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full font-black text-black text-lg hover:scale-105 active:scale-95 transition-transform shadow-lg"
+                        >
+                            Buy for $19.99
+                        </button>
                     </div>
-
-                    <button 
-                        onClick={() => {
-                            setIsPro(true); 
-                            setShowSubscriptionModal(false);
-                            alert("Welcome to Pro! 🎉");
-                        }}
-                        className="w-full py-3 sm:py-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full font-black text-black text-lg sm:text-xl hover:scale-105 active:scale-95 transition-transform shadow-lg"
-                    >
-                        Ask Parents to Buy ($4.99)
-                    </button>
-                    <p className="mt-3 sm:mt-4 text-[10px] sm:text-xs text-white/30">One-time purchase. Kids: Ask first!</p>
                 </div>
+                <button onClick={() => setShowSubscriptionModal(false)} className="mt-8 text-white/30 hover:text-white text-sm">Maybe Later</button>
             </div>
         )}
 

@@ -56,12 +56,12 @@ const MODEL_CONFIG = {
     ],
     // Fallback specifically for image if Gemini family fails
     imagen: 'imagen-4.0-generate-001',
-    // Video: Fallback chain: Veo 3.1 -> Veo 3.0 -> HF (Wan, LTX, SVD)
+    // Video: Fallback chain: Veo 3.1 -> Veo 3.0 -> HF (HunyuanVideo, Wan, LTX, SVD)
     video: [
         'veo-3.1-generate-preview',
         'veo-3.0-generate-001',
-        'hf:lightx2v/Wan2.2-Distill-Loras',
-        'hf:Wan-AI/Wan2.2-I2V-A14B',
+        'hf:tencent/HunyuanVideo',
+        'hf:Wan-AI/Wan2.1-I2V-14B-720P',
         'hf:Lightricks/LTX-Video',
         'hf:stabilityai/stable-video-diffusion-img2vid-xt-1-1'
     ],
@@ -433,7 +433,10 @@ export const generateVeoVideo = async (prompt: string, imageBase64: string, sign
             config: {
                 numberOfVideos: 1,
                 resolution: '720p',
-                aspectRatio: '16:9'
+                aspectRatio: '16:9',
+                // Optimize for 3 frames as requested
+                fps: 1,
+                durationSeconds: 3
             }
         });
     
@@ -450,7 +453,8 @@ export const generateVeoVideo = async (prompt: string, imageBase64: string, sign
     
         // The URI is a File API URI, we need to use the download endpoint
         // Correct format: https://generativelanguage.googleapis.com/v1beta/files/FILE_ID:download?alt=media&key=API_KEY
-        const fileId = videoFile.uri.split('/').pop();
+        // Note: The URI might already contain the file ID or be the full path.
+        const fileId = videoFile.uri.includes('/') ? videoFile.uri.split('/').pop() : videoFile.uri;
         const downloadUrl = `https://generativelanguage.googleapis.com/v1beta/files/${fileId}:download?alt=media&key=${getCurrentApiKey()}`;
         
         const fetchResponse = await fetch(downloadUrl, { signal });
