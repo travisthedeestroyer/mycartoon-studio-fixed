@@ -262,47 +262,91 @@ export const DirectorChat: React.FC<DirectorChatProps> = ({
 
         currentSessionPromise.current = sessionPromise;
 
-        await audioContextRef.current.audioWorklet.addModule('/audio-processor.js');
-        const workletNode = new AudioWorkletNode(audioContextRef.current, 'audio-processor');
-        processorRef.current = workletNode as any;
-        
-        workletNode.port.onmessage = async (event) => {
-            if (!isSessionActiveRef.current) return;
-
-            const inputData = event.data;
+        try {
+            await audioContextRef.current.audioWorklet.addModule('/audio-processor.js');
+            const workletNode = new AudioWorkletNode(audioContextRef.current, 'audio-processor');
+            processorRef.current = workletNode as any;
             
-            let sum = 0;
-            for(let i=0; i<inputData.length; i++) sum += inputData[i] * inputData[i];
-            const rms = Math.sqrt(sum / inputData.length);
-            if (rms > 0.02) {
-                setIsUserSpeaking(true);
-                resetIdle();
-            } else {
-                setIsUserSpeaking(false);
-            }
+            workletNode.port.onmessage = async (event) => {
+                if (!isSessionActiveRef.current) return;
 
-            const pcmData = new Int16Array(inputData.length);
-            for (let i = 0; i < inputData.length; i++) {
-                pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
-            }
-            let binary = '';
-            const bytes = new Uint8Array(pcmData.buffer);
-            for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-            const base64Data = btoa(binary);
-
-            try {
-                const session = await sessionPromise;
-                if (isSessionActiveRef.current) {
-                    session.sendRealtimeInput({
-                        media: { mimeType: "audio/pcm;rate=16000", data: base64Data }
-                    });
+                const inputData = event.data;
+                
+                let sum = 0;
+                for(let i=0; i<inputData.length; i++) sum += inputData[i] * inputData[i];
+                const rms = Math.sqrt(sum / inputData.length);
+                if (rms > 0.02) {
+                    setIsUserSpeaking(true);
+                    resetIdle();
+                } else {
+                    setIsUserSpeaking(false);
                 }
-            } catch (err) {
-                // Squelch errors if session failed to connect or was closed
-            }
-        };
-        source.connect(workletNode);
-        workletNode.connect(audioContextRef.current.destination);
+
+                const pcmData = new Int16Array(inputData.length);
+                for (let i = 0; i < inputData.length; i++) {
+                    pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
+                }
+                let binary = '';
+                const bytes = new Uint8Array(pcmData.buffer);
+                for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+                const base64Data = btoa(binary);
+
+                try {
+                    const session = await sessionPromise;
+                    if (isSessionActiveRef.current) {
+                        session.sendRealtimeInput({
+                            media: { mimeType: "audio/pcm;rate=16000", data: base64Data }
+                        });
+                    }
+                } catch (err) {
+                    // Squelch errors if session failed to connect or was closed
+                }
+            };
+            source.connect(workletNode);
+            workletNode.connect(audioContextRef.current.destination);
+        } catch (workletError) {
+            console.warn("AudioWorklet failed, falling back to ScriptProcessor", workletError);
+            const processor = audioContextRef.current.createScriptProcessor(4096, 1, 1);
+            processorRef.current = processor;
+            
+            processor.onaudioprocess = async (e) => {
+                if (!isSessionActiveRef.current) return;
+
+                const inputData = e.inputBuffer.getChannelData(0);
+                
+                let sum = 0;
+                for(let i=0; i<inputData.length; i++) sum += inputData[i] * inputData[i];
+                const rms = Math.sqrt(sum / inputData.length);
+                if (rms > 0.02) {
+                    setIsUserSpeaking(true);
+                    resetIdle();
+                } else {
+                    setIsUserSpeaking(false);
+                }
+
+                const pcmData = new Int16Array(inputData.length);
+                for (let i = 0; i < inputData.length; i++) {
+                    pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
+                }
+                let binary = '';
+                const bytes = new Uint8Array(pcmData.buffer);
+                for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+                const base64Data = btoa(binary);
+
+                try {
+                    const session = await sessionPromise;
+                    if (isSessionActiveRef.current) {
+                        session.sendRealtimeInput({
+                            media: { mimeType: "audio/pcm;rate=16000", data: base64Data }
+                        });
+                    }
+                } catch (err) {
+                    // Squelch errors if session failed to connect or was closed
+                }
+            };
+            source.connect(processor);
+            processor.connect(audioContextRef.current.destination);
+        }
 
       } catch (e) {
           console.error(e);
