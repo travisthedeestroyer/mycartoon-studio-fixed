@@ -34,48 +34,48 @@ export const Shop: React.FC<ShopProps> = ({
   return (
     <div className="flex flex-col h-full relative z-10 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between p-8 border-b border-white/10 bg-black/20 backdrop-blur-md">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between p-4 sm:p-6 md:p-8 border-b border-white/10 bg-black/20 backdrop-blur-md">
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
             <button 
               onClick={onClose}
-              className="p-3 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+              className="p-2 sm:p-3 rounded-full bg-white/5 hover:bg-white/10 active:bg-white/15 transition-colors"
             >
-              <ArrowLeft />
+              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
-            <h2 className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500">
-              Studio Shop
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500">
+              <span className="hidden sm:inline">Studio </span>Shop
             </h2>
         </div>
-        <div className="bg-black/40 px-6 py-2 rounded-full border border-yellow-500/30 flex items-center gap-2">
-           <span className="text-2xl">🪙</span>
-           <span className="text-xl font-bold text-yellow-400 tabular-nums">{wallet}</span>
+        <div className="bg-black/40 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full border border-yellow-500/30 flex items-center gap-1 sm:gap-2">
+           <span className="text-lg sm:text-xl md:text-2xl">🪙</span>
+           <span className="text-base sm:text-lg md:text-xl font-bold text-yellow-400 tabular-nums">{wallet}</span>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex justify-center gap-4 p-4 border-b border-white/5">
+      <div className="flex justify-center gap-2 sm:gap-3 md:gap-4 p-3 sm:p-4 border-b border-white/5">
         <button 
             onClick={() => setActiveTab('themes')}
-            className={`px-8 py-3 rounded-full font-bold flex items-center gap-2 transition-all ${activeTab === 'themes' ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10 text-white/50'}`}
+            className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-bold flex items-center gap-1.5 sm:gap-2 transition-all text-sm sm:text-base ${activeTab === 'themes' ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10 active:bg-white/15 text-white/50'}`}
         >
-            <Palette size={20} />
-            Studio Themes
+            <Palette size={18} className="sm:w-5 sm:h-5" />
+            <span className="hidden xs:inline">Studio </span>Themes
         </button>
         <button 
             onClick={() => setActiveTab('voices')}
-            className={`px-8 py-3 rounded-full font-bold flex items-center gap-2 transition-all ${activeTab === 'voices' ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10 text-white/50'}`}
+            className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-bold flex items-center gap-1.5 sm:gap-2 transition-all text-sm sm:text-base ${activeTab === 'voices' ? 'bg-white text-black' : 'bg-white/5 hover:bg-white/10 active:bg-white/15 text-white/50'}`}
         >
-            <Mic size={20} />
-            Director Voices
+            <Mic size={18} className="sm:w-5 sm:h-5" />
+            <span className="hidden xs:inline">Director </span>Voices
         </button>
       </div>
 
       {/* Grid */}
-      <div className="flex-1 overflow-y-auto p-8">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
         
         {/* THEMES TAB */}
         {activeTab === 'themes' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             {THEMES.map((theme) => {
                 const isOwned = ownedThemes.includes(theme.id);
                 const isActive = currentTheme.id === theme.id;
@@ -144,7 +144,7 @@ export const Shop: React.FC<ShopProps> = ({
 
         {/* VOICES TAB */}
         {activeTab === 'voices' && (
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
              {VOICE_SKINS.map((voice) => {
                  const isOwned = ownedVoices.includes(voice.id);
                  const isActive = currentVoiceId === voice.id;

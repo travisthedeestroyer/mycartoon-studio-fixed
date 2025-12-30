@@ -411,65 +411,65 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${currentTheme.mainGradient} p-4 md:p-8 flex items-center justify-center font-['Fredoka'] text-white transition-colors duration-700`}>
-      <div className={`w-full max-w-6xl aspect-video ${currentTheme.panelBg} backdrop-blur-3xl rounded-[2.5rem] shadow-2xl border ${currentTheme.panelBorder} relative overflow-hidden flex flex-col transition-colors duration-700`}>
+    <div className={`min-h-screen bg-gradient-to-br ${currentTheme.mainGradient} p-2 sm:p-4 md:p-8 flex items-center justify-center font-['Fredoka'] text-white transition-colors duration-700`}>
+      <div className={`w-full max-w-6xl sm:aspect-video ${currentTheme.panelBg} backdrop-blur-3xl rounded-2xl sm:rounded-[2.5rem] shadow-2xl border ${currentTheme.panelBorder} relative overflow-hidden flex flex-col transition-colors duration-700 min-h-[100svh] sm:min-h-0`}>
         
         {appState === AppState.HOME && (
-            <div className="flex-1 flex flex-col items-center justify-center relative p-12 text-center space-y-10">
+            <div className="flex-1 flex flex-col items-center justify-center relative p-4 sm:p-8 md:p-12 text-center space-y-6 sm:space-y-10">
                  <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20 pointer-events-none">
                      <div className="absolute top-10 left-10 w-64 h-64 bg-purple-500 rounded-full blur-[100px] animate-pulse"></div>
                      <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-500 rounded-full blur-[120px] animate-pulse"></div>
                  </div>
                  
-                 <div className="absolute top-8 left-8 flex gap-4 z-20">
-                    <div className="bg-black/40 backdrop-blur-xl px-4 py-2 rounded-full border border-white/10 flex items-center gap-2 text-sm font-bold">
-                        {isPro ? <Crown size={16} className="text-yellow-400" /> : <Zap size={16} className="text-white/50" />}
-                        {isPro ? <span className="text-yellow-400">Pro Studio Active</span> : <span className="text-white/50">{veoTrials} Free Videos Left</span>}
+                <div className="absolute top-3 sm:top-6 md:top-8 left-3 sm:left-6 md:left-8 flex gap-2 sm:gap-4 z-20">
+                   <div className="bg-black/40 backdrop-blur-xl px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full border border-white/10 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold">
+                       {isPro ? <Crown size={14} className="text-yellow-400 sm:w-4 sm:h-4" /> : <Zap size={14} className="text-white/50 sm:w-4 sm:h-4" />}
+                       {isPro ? <span className="text-yellow-400 hidden sm:inline">Pro Studio Active</span> : <span className="text-white/50"><span className="hidden sm:inline">{veoTrials} Free Videos Left</span><span className="sm:hidden">{veoTrials} Free</span></span>}
+                   </div>
+                </div>
+
+                <div className="absolute top-3 sm:top-6 md:top-8 right-3 sm:right-6 md:right-8 z-20">
+                    <button 
+                       onClick={() => setAppState(AppState.SHOP)}
+                       className="bg-black/40 backdrop-blur-xl px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full border border-white/10 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm font-bold hover:bg-black/60 transition-colors"
+                    >
+                        <ShoppingBag size={16} className="text-pink-400 sm:w-[18px] sm:h-[18px]" />
+                        <span className="hidden sm:inline">Shop</span>
+                        <span className="bg-yellow-500 text-black text-xs px-1.5 sm:px-2 py-0.5 rounded-full">{wallet} 🪙</span>
+                    </button>
+                </div>
+
+                <div className="z-10 space-y-4 sm:space-y-6 animate-fade-in-up">
+                    <div className="inline-flex items-center justify-center p-4 sm:p-6 bg-white/10 rounded-2xl sm:rounded-3xl mb-2 sm:mb-4 shadow-lg backdrop-blur-md border border-white/10">
+                       <Sparkles className="w-12 h-12 sm:w-16 sm:h-16 text-yellow-400" />
+                    </div>
+                    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter drop-shadow-2xl bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-white px-4">
+                       ToonCraft
+                    </h1>
+                    <p className="text-lg sm:text-xl md:text-2xl text-indigo-100/80 font-medium max-w-2xl mx-auto px-4">
+                       The AI Cartoon Studio for Kids
+                    </p>
+
+                    <div className="flex flex-col items-center gap-4 sm:gap-6 mt-6 sm:mt-8">
+                        <button 
+                           onClick={handleStartFlow}
+                           className="bg-white text-indigo-900 px-6 sm:px-10 md:px-12 py-3 sm:py-4 md:py-5 rounded-full font-black text-lg sm:text-xl md:text-2xl shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 sm:gap-3 group"
+                        >
+                           <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
+                               <Video size={18} className="text-indigo-600 sm:w-5 sm:h-5" />
+                           </div>
+                           Start Filming <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </button>
                     </div>
                  </div>
-
-                 <div className="absolute top-8 right-8 z-20">
-                     <button 
-                        onClick={() => setAppState(AppState.SHOP)}
-                        className="bg-black/40 backdrop-blur-xl px-4 py-2 rounded-full border border-white/10 flex items-center gap-2 text-sm font-bold hover:bg-black/60 transition-colors"
-                     >
-                         <ShoppingBag size={18} className="text-pink-400" />
-                         Shop
-                         <span className="bg-yellow-500 text-black text-xs px-2 py-0.5 rounded-full">{wallet} 🪙</span>
-                     </button>
-                 </div>
-
-                 <div className="z-10 space-y-6 animate-fade-in-up">
-                     <div className="inline-flex items-center justify-center p-6 bg-white/10 rounded-3xl mb-4 shadow-lg backdrop-blur-md border border-white/10">
-                        <Sparkles className="w-16 h-16 text-yellow-400" />
-                     </div>
-                     <h1 className="text-7xl md:text-8xl font-black tracking-tighter drop-shadow-2xl bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-white">
-                        ToonCraft
-                     </h1>
-                     <p className="text-2xl text-indigo-100/80 font-medium max-w-2xl mx-auto">
-                        The AI Cartoon Studio for Kids
-                     </p>
-
-                     <div className="flex flex-col items-center gap-6 mt-8">
-                         <button 
-                            onClick={handleStartFlow}
-                            className="bg-white text-indigo-900 px-12 py-5 rounded-full font-black text-2xl shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 group"
-                         >
-                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
-                                <Video size={20} className="text-indigo-600" />
-                            </div>
-                            Start Filming <ChevronRight />
-                         </button>
-                     </div>
-                 </div>
                  
-                 {savedProjects.length > 0 && (
-                     <div className="absolute bottom-8 left-0 w-full px-12">
-                         <div className="flex gap-4 overflow-x-auto pb-4 justify-center">
-                             {savedProjects.map(p => (
-                                 <div key={p.id} onClick={() => { setScript(p.script); setAppState(AppState.PLAYING); }} className="flex-shrink-0 w-48 bg-black/40 p-4 rounded-2xl cursor-pointer hover:bg-black/60 border border-white/5 transition-all">
-                                     <div className="text-sm font-bold truncate">{p.title}</div>
-                                     <div className="text-xs text-white/40">{p.date}</div>
+                {savedProjects.length > 0 && (
+                    <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-0 w-full px-4 sm:px-8 md:px-12">
+                        <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-3 sm:pb-4 justify-start sm:justify-center">
+                            {savedProjects.map(p => (
+                                <div key={p.id} onClick={() => { setScript(p.script); setAppState(AppState.PLAYING); }} className="flex-shrink-0 w-40 sm:w-48 bg-black/40 p-3 sm:p-4 rounded-xl sm:rounded-2xl cursor-pointer hover:bg-black/60 border border-white/5 transition-all">
+                                    <div className="text-xs sm:text-sm font-bold truncate">{p.title}</div>
+                                    <div className="text-[10px] sm:text-xs text-white/40">{p.date}</div>
                                  </div>
                              ))}
                          </div>
@@ -494,37 +494,37 @@ const App: React.FC = () => {
         )}
 
         {appState === AppState.AGE_INPUT && (
-            <div className="flex-1 flex flex-col items-center justify-center relative p-12 z-20 animate-fade-in">
-                <h2 className="text-5xl font-black mb-12">How old are you?</h2>
-                <div className="grid grid-cols-3 gap-6">
+            <div className="flex-1 flex flex-col items-center justify-center relative p-4 sm:p-8 md:p-12 z-20 animate-fade-in">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black mb-8 sm:mb-12 px-4">How old are you?</h2>
+                <div className="grid grid-cols-4 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
                     {[5,6,7,8,9,10,11,12].map(age => (
                         <button 
                             key={age} 
                             onClick={() => handleAgeSelect(age)} 
-                            className="w-24 h-24 rounded-2xl bg-white/10 hover:bg-white/20 border-2 border-white/10 hover:border-white/40 text-4xl font-black transition-all hover:scale-110"
+                            className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-xl sm:rounded-2xl bg-white/10 hover:bg-white/20 active:bg-white/30 border-2 border-white/10 hover:border-white/40 text-2xl sm:text-3xl md:text-4xl font-black transition-all hover:scale-110 active:scale-95"
                         >
                             {age}
                         </button>
                     ))}
                 </div>
-                <button onClick={() => setAppState(AppState.HOME)} className="mt-12 opacity-50 hover:opacity-100">Back</button>
+                <button onClick={() => setAppState(AppState.HOME)} className="mt-8 sm:mt-12 opacity-50 hover:opacity-100 text-sm sm:text-base">Back</button>
             </div>
         )}
 
         {appState === AppState.SCENE_SELECTION && (
-            <div className="flex-1 flex flex-col items-center justify-center relative p-12 z-20 animate-fade-in">
-                <div className="inline-flex items-center justify-center p-4 bg-white/10 rounded-full mb-6 shadow-lg backdrop-blur-md border border-white/10">
-                    <Layers className="w-8 h-8 text-cyan-400" />
+            <div className="flex-1 flex flex-col items-center justify-center relative p-4 sm:p-8 md:p-12 z-20 animate-fade-in">
+                <div className="inline-flex items-center justify-center p-3 sm:p-4 bg-white/10 rounded-full mb-4 sm:mb-6 shadow-lg backdrop-blur-md border border-white/10">
+                    <Layers className="w-6 h-6 sm:w-8 sm:h-8 text-cyan-400" />
                 </div>
-                <h2 className="text-4xl font-black mb-4">How many scenes?</h2>
-                <p className="text-xl text-white/50 mb-10">Choose the length of your cartoon.</p>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mb-3 sm:mb-4 px-4">How many scenes?</h2>
+                <p className="text-base sm:text-lg md:text-xl text-white/50 mb-6 sm:mb-10 px-4">Choose the length of your cartoon.</p>
                 
-                <div className="grid grid-cols-4 gap-6">
+                <div className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                     {[1,2,3,4,5,6,7,8].map(count => (
                         <button 
                             key={count} 
                             onClick={() => { setSceneCount(count); setAppState(AppState.BRAINSTORM); }} 
-                            className="w-20 h-20 rounded-2xl bg-white/10 hover:bg-cyan-500 hover:text-black border-2 border-white/10 hover:border-cyan-400 text-3xl font-black transition-all hover:scale-110 flex items-center justify-center"
+                            className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-xl sm:rounded-2xl bg-white/10 hover:bg-cyan-500 active:bg-cyan-600 hover:text-black border-2 border-white/10 hover:border-cyan-400 text-2xl sm:text-3xl font-black transition-all hover:scale-110 active:scale-95 flex items-center justify-center"
                         >
                             {count}
                         </button>
@@ -569,47 +569,47 @@ const App: React.FC = () => {
         )}
 
         {errorMessage && (
-            <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-xl flex flex-col items-center justify-center p-12 text-center animate-fade-in">
-                <Trash2 className="w-20 h-20 text-red-500 mb-6" />
-                <h2 className="text-3xl font-black mb-4">Oops!</h2>
-                <p className="text-xl opacity-70 mb-8 max-w-lg">{errorMessage}</p>
-                <div className="flex gap-4">
-                    <button onClick={() => setAppState(AppState.HOME)} className="px-8 py-3 rounded-xl bg-white/10 hover:bg-white/20">Go Home</button>
-                    {lastStoryContext && <button onClick={() => handleStoryReady(lastStoryContext)} className="px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500">Try Again</button>}
+            <div className="absolute inset-0 z-50 bg-black/80 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-8 md:p-12 text-center animate-fade-in">
+                <Trash2 className="w-16 h-16 sm:w-20 sm:h-20 text-red-500 mb-4 sm:mb-6" />
+                <h2 className="text-2xl sm:text-3xl font-black mb-3 sm:mb-4 px-4">Oops!</h2>
+                <p className="text-base sm:text-lg md:text-xl opacity-70 mb-6 sm:mb-8 max-w-lg px-4">{errorMessage}</p>
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-sm px-4">
+                    <button onClick={() => setAppState(AppState.HOME)} className="px-6 sm:px-8 py-3 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors">Go Home</button>
+                    {lastStoryContext && <button onClick={() => handleStoryReady(lastStoryContext)} className="px-6 sm:px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 transition-colors">Try Again</button>}
                 </div>
             </div>
         )}
 
         {showSubscriptionModal && (
-            <div className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-8 animate-fade-in">
-                <div className="relative max-w-lg w-full bg-gradient-to-b from-indigo-900 to-black p-8 rounded-3xl border border-yellow-500/50 shadow-2xl text-center">
-                    <button onClick={() => setShowSubscriptionModal(false)} className="absolute top-4 right-4 text-white/50 hover:text-white">
-                        <X size={24} />
+            <div className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 animate-fade-in overflow-y-auto">
+                <div className="relative max-w-lg w-full bg-gradient-to-b from-indigo-900 to-black p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-yellow-500/50 shadow-2xl text-center my-auto">
+                    <button onClick={() => setShowSubscriptionModal(false)} className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white/50 hover:text-white active:text-white/70 transition-colors">
+                        <X size={20} className="sm:w-6 sm:h-6" />
                     </button>
                     
-                    <div className="w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-yellow-500/50">
-                        <Crown size={40} className="text-black" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg shadow-yellow-500/50">
+                        <Crown size={32} className="text-black sm:w-10 sm:h-10" />
                     </div>
                     
-                    <h2 className="text-3xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500">
+                    <h2 className="text-2xl sm:text-3xl font-black mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 px-4">
                         Unlock ToonCraft Pro!
                     </h2>
-                    <p className="text-indigo-200 mb-8">
+                    <p className="text-sm sm:text-base text-indigo-200 mb-6 sm:mb-8 px-4">
                         Ask your parents to unlock unlimited magic powers!
                     </p>
 
-                    <div className="space-y-4 mb-8 text-left bg-white/5 p-6 rounded-2xl border border-white/5">
-                        <div className="flex items-center gap-3">
-                            <Video className="text-pink-400" size={20} />
-                            <span>Unlimited <strong>Magic AI Video</strong> generation</span>
+                    <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 text-left bg-white/5 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-white/5">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <Video className="text-pink-400 flex-shrink-0" size={18} />
+                            <span className="text-sm sm:text-base">Unlimited <strong>Magic AI Video</strong> generation</span>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <Sparkles className="text-cyan-400" size={20} />
-                            <span><strong>4K Quality</strong> Images</span>
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <Sparkles className="text-cyan-400 flex-shrink-0" size={18} />
+                            <span className="text-sm sm:text-base"><strong>4K Quality</strong> Images</span>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <ShoppingBag className="text-yellow-400" size={20} />
-                            <span>Unlock <strong>All Studio Themes</strong></span>
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <ShoppingBag className="text-yellow-400 flex-shrink-0" size={18} />
+                            <span className="text-sm sm:text-base">Unlock <strong>All Studio Themes</strong></span>
                         </div>
                     </div>
 
@@ -619,11 +619,11 @@ const App: React.FC = () => {
                             setShowSubscriptionModal(false);
                             alert("Welcome to Pro! 🎉");
                         }}
-                        className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full font-black text-black text-xl hover:scale-105 transition-transform shadow-lg"
+                        className="w-full py-3 sm:py-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full font-black text-black text-lg sm:text-xl hover:scale-105 active:scale-95 transition-transform shadow-lg"
                     >
                         Ask Parents to Buy ($4.99)
                     </button>
-                    <p className="mt-4 text-xs text-white/30">One-time purchase. Kids: Ask first!</p>
+                    <p className="mt-3 sm:mt-4 text-[10px] sm:text-xs text-white/30">One-time purchase. Kids: Ask first!</p>
                 </div>
             </div>
         )}

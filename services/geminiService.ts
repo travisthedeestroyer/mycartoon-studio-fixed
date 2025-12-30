@@ -10,14 +10,14 @@ import { pcmToWav } from "../utils/audio";
 // Note: Set HUGGINGFACE_API_KEY environment variable for Hugging Face fallbacks
 const DEFAULT_HF_TOKEN = process.env.HUGGINGFACE_API_KEY || '';
 
-// API Key Pool for rotation
+// API Key Pool for rotation - loaded from environment variables
 const API_KEY_POOL = [
-    'AIzaSyCxr5l1Ch2_aAYaxLinSn5mNdfVHcx7Ztk',
-    'AIzaSyBjFgwu6UctJzNVUvE8nS9MVkyzji0lpaI',
-    'AIzaSyCBSxqWAvLwfdZEoeEcjgGwTUHt1uzh3Vw',
-    'AIzaSyDBQvWYVx1Jk9fO0f33uRLRwgNr-ca0u7M',
-    'AIzaSyAZJjPYJBJ0ZMlt1FrnY-Xzx7fHAHPJFFc'
-];
+    import.meta.env.VITE_GEMINI_API_KEY_1,
+    import.meta.env.VITE_GEMINI_API_KEY_2,
+    import.meta.env.VITE_GEMINI_API_KEY_3,
+    import.meta.env.VITE_GEMINI_API_KEY_4,
+    import.meta.env.VITE_GEMINI_API_KEY_5
+].filter(Boolean); // Remove undefined/empty keys
 
 let currentKeyIndex = 0;
 

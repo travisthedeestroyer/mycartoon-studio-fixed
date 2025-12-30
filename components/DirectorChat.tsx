@@ -497,44 +497,44 @@ export const DirectorChat: React.FC<DirectorChatProps> = ({
     <div className={`flex flex-col h-full ${theme.panelBg} rounded-3xl overflow-hidden border ${theme.panelBorder} relative`}>
       
       {/* Header */}
-      <div className={`absolute top-0 left-0 w-full p-6 flex items-start justify-between z-20`}>
-        <div className="flex items-center gap-3 bg-black/30 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-            <div className={`w-3 h-3 rounded-full ${isDirectorSpeaking ? 'bg-green-400 animate-pulse' : 'bg-red-500'}`} />
-            <p className="text-sm font-bold text-white/80">{connectionStatus}</p>
+      <div className={`absolute top-0 left-0 w-full p-3 sm:p-4 md:p-6 flex items-start justify-between z-20 gap-2`}>
+        <div className="flex items-center gap-2 sm:gap-3 bg-black/30 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/10">
+            <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${isDirectorSpeaking ? 'bg-green-400 animate-pulse' : 'bg-red-500'}`} />
+            <p className="text-xs sm:text-sm font-bold text-white/80 truncate max-w-[120px] sm:max-w-none">{connectionStatus}</p>
         </div>
         
         {/* LARGE TOGGLE SWITCH */}
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col items-end gap-1 sm:gap-2">
             <div 
                 onClick={handleToggleMode}
-                className="flex items-center gap-3 bg-black/60 p-3 pl-5 rounded-full backdrop-blur-md border border-white/20 cursor-pointer hover:bg-black/70 transition-all shadow-2xl group scale-110 origin-right"
+                className="flex items-center gap-1.5 sm:gap-2 md:gap-3 bg-black/60 p-2 pl-3 sm:p-3 sm:pl-5 rounded-full backdrop-blur-md border border-white/20 cursor-pointer hover:bg-black/70 active:bg-black/80 transition-all shadow-2xl group sm:scale-110 origin-right"
             >
-                <span className={`text-sm font-bold uppercase tracking-wider ${!isMovieMode ? 'text-white' : 'text-white/40'}`}>
+                <span className={`text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wider hidden sm:inline ${!isMovieMode ? 'text-white' : 'text-white/40'}`}>
                     Classic
                 </span>
                 
                 {/* The Switch Track */}
-                <div className={`w-24 h-12 rounded-full p-1.5 transition-all duration-300 relative ${isMovieMode ? 'bg-gradient-to-r from-yellow-400 to-orange-500 shadow-[0_0_20px_rgba(250,204,21,0.6)]' : 'bg-white/10 shadow-inner'}`}>
+                <div className={`w-16 h-8 sm:w-20 sm:h-10 md:w-24 md:h-12 rounded-full p-1 sm:p-1.5 transition-all duration-300 relative ${isMovieMode ? 'bg-gradient-to-r from-yellow-400 to-orange-500 shadow-[0_0_20px_rgba(250,204,21,0.6)]' : 'bg-white/10 shadow-inner'}`}>
                     {/* The Knob */}
-                    <div className={`w-9 h-9 bg-white rounded-full shadow-lg transition-transform duration-300 flex items-center justify-center transform ${isMovieMode ? 'translate-x-12' : 'translate-x-0'}`}>
-                        {isMovieMode ? <Video size={20} className="text-orange-500" /> : <BookOpen size={20} className="text-gray-500" />}
+                    <div className={`w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 bg-white rounded-full shadow-lg transition-transform duration-300 flex items-center justify-center transform ${isMovieMode ? 'translate-x-8 sm:translate-x-10 md:translate-x-12' : 'translate-x-0'}`}>
+                        {isMovieMode ? <Video size={14} className="text-orange-500 sm:w-4 sm:h-4 md:w-5 md:h-5" /> : <BookOpen size={14} className="text-gray-500 sm:w-4 sm:h-4 md:w-5 md:h-5" />}
                     </div>
                 </div>
 
-                <span className={`text-sm font-bold uppercase tracking-wider ${isMovieMode ? 'text-yellow-400' : 'text-white/40'}`}>
-                    AI Video
+                <span className={`text-[10px] sm:text-xs md:text-sm font-bold uppercase tracking-wider ${isMovieMode ? 'text-yellow-400' : 'text-white/40'}`}>
+                    <span className="hidden sm:inline">AI </span>Video
                 </span>
             </div>
 
             {/* Trial Status Badge */}
-            <div className="mr-2">
+            <div className="mr-1 sm:mr-2">
                 {isPro ? (
-                    <span className="flex items-center gap-1 text-[10px] font-bold text-yellow-400 bg-yellow-400/10 px-2 py-1 rounded-full border border-yellow-400/20">
-                        <Crown size={10} /> PRO ACTIVE
+                    <span className="flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-[10px] font-bold text-yellow-400 bg-yellow-400/10 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border border-yellow-400/20">
+                        <Crown size={8} className="sm:w-[10px] sm:h-[10px]" /> <span className="hidden xs:inline">PRO </span>ACTIVE
                     </span>
                 ) : (
-                   <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border ${veoTrials > 0 ? 'text-green-400 bg-green-400/10 border-green-400/20' : 'text-red-400 bg-red-400/10 border-red-400/20'}`}>
-                       {veoTrials > 0 ? `${veoTrials} FREE VIDEOS` : '0 FREE LEFT'}
+                   <span className={`flex items-center gap-0.5 sm:gap-1 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full border ${veoTrials > 0 ? 'text-green-400 bg-green-400/10 border-green-400/20' : 'text-red-400 bg-red-400/10 border-red-400/20'}`}>
+                       {veoTrials > 0 ? `${veoTrials} FREE` : '0 LEFT'}
                    </span>
                 )}
             </div>
@@ -546,13 +546,13 @@ export const DirectorChat: React.FC<DirectorChatProps> = ({
           <canvas ref={canvasRef} width={800} height={600} className="w-full h-full object-cover" />
           
           <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 pointer-events-none">
-              <div className="text-center px-6 transition-all duration-300 transform">
-                   <h2 className="text-4xl font-black text-white drop-shadow-2xl mb-4 tracking-tight">
+              <div className="text-center px-4 sm:px-6 transition-all duration-300 transform">
+                   <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white drop-shadow-2xl mb-2 sm:mb-4 tracking-tight">
                        {isDirectorSpeaking 
                           ? (userAge < 8 ? "Listen..." : "Director is Speaking") 
                           : (isUserSpeaking ? "Hearing you..." : "Go ahead, say something!")}
                    </h2>
-                   <p className="text-white/60 text-lg animate-pulse">
+                   <p className="text-white/60 text-sm sm:text-base md:text-lg animate-pulse">
                        {isDirectorSpeaking ? "" : (userAge < 8 ? "Tell me a story!" : "Describe your movie idea...")}
                    </p>
               </div>
@@ -563,21 +563,21 @@ export const DirectorChat: React.FC<DirectorChatProps> = ({
               <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-30">
                   <button 
                     onClick={handleFallbackRecording}
-                    className={`flex flex-col items-center gap-4 p-8 rounded-full transition-all border-4 cursor-pointer shadow-2xl ${
+                    className={`flex flex-col items-center gap-3 sm:gap-4 p-6 sm:p-8 rounded-full transition-all border-2 sm:border-4 cursor-pointer shadow-2xl ${
                         isRecordingFallback 
                         ? 'bg-red-500/20 border-red-500 animate-pulse scale-110' 
-                        : 'bg-white/10 hover:bg-white/20 border-white/30 hover:scale-105'
+                        : 'bg-white/10 hover:bg-white/20 active:bg-white/30 border-white/30 hover:scale-105 active:scale-95'
                     }`}
                   >
-                      <Mic size={56} className={isRecordingFallback ? 'text-red-500' : 'text-white'} />
-                      <span className="font-bold text-lg">
+                      <Mic size={48} className={`sm:w-14 sm:h-14 ${isRecordingFallback ? 'text-red-500' : 'text-white'}`} />
+                      <span className="font-bold text-base sm:text-lg">
                           {isRecordingFallback ? "Stop Recording" : "Tap to Speak"}
                       </span>
                   </button>
                   
-                  <div className="absolute bottom-20 text-white/50 text-sm flex items-center gap-2">
-                       <AlertTriangle size={14} className="text-yellow-500" />
-                       Running in Basic Mode (Live API unavailable)
+                  <div className="absolute bottom-16 sm:bottom-20 text-white/50 text-xs sm:text-sm flex items-center gap-2 px-4 text-center">
+                       <AlertTriangle size={12} className="text-yellow-500 sm:w-[14px] sm:h-[14px] flex-shrink-0" />
+                       <span>Running in Basic Mode (Live API unavailable)</span>
                   </div>
               </div>
           )}
@@ -586,10 +586,10 @@ export const DirectorChat: React.FC<DirectorChatProps> = ({
               <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-30">
                   <button 
                     onClick={startLiveSession}
-                    className="flex flex-col items-center gap-4 bg-white/10 p-8 rounded-full hover:bg-white/20 transition-all border-2 border-red-500 animate-pulse cursor-pointer"
+                    className="flex flex-col items-center gap-3 sm:gap-4 bg-white/10 p-6 sm:p-8 rounded-full hover:bg-white/20 active:bg-white/30 transition-all border-2 border-red-500 animate-pulse cursor-pointer"
                   >
-                      <Mic size={48} className="text-red-500" />
-                      <span className="font-bold">Tap to Retry</span>
+                      <Mic size={40} className="text-red-500 sm:w-12 sm:h-12" />
+                      <span className="font-bold text-sm sm:text-base">Tap to Retry</span>
                   </button>
               </div>
           )}
@@ -597,10 +597,10 @@ export const DirectorChat: React.FC<DirectorChatProps> = ({
           {/* Random Story Button (Testing) */}
           <button
               onClick={handleRandomStory}
-              className="absolute bottom-6 right-6 bg-white/10 hover:bg-white/20 p-4 rounded-full backdrop-blur-md border border-white/10 transition-all z-30 group pointer-events-auto shadow-xl"
+              className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 bg-white/10 hover:bg-white/20 active:bg-white/30 p-3 sm:p-4 rounded-full backdrop-blur-md border border-white/10 transition-all z-30 group pointer-events-auto shadow-xl"
               title="Random Story (Fast Forward)"
           >
-              <Dice5 className="text-white/70 group-hover:text-yellow-400 group-hover:rotate-180 transition-all duration-500" size={24} />
+              <Dice5 className="text-white/70 group-hover:text-yellow-400 group-hover:rotate-180 transition-all duration-500" size={20} />
           </button>
       </div>
 
