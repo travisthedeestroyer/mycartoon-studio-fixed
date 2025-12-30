@@ -85,8 +85,11 @@ export const ProductionLoader: React.FC<ProductionLoaderProps> = ({ progress, th
   const shootCooldownRef = useRef(0);
   
   // Determine Mode
-  const isShooter = userAge >= 10;
-  const isTargetPractice = userAge >= 8 && userAge < 10;
+  // Detect mobile for performance optimization
+  const [isMobile] = useState(() => /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+  
+  const isShooter = userAge >= 10 && !isMobile; // Disable heavy shooter on mobile
+  const isTargetPractice = (userAge >= 8 && userAge < 10) || (userAge >= 10 && isMobile); // Fallback to target practice on mobile for older kids
   
   const COLORS = ['text-red-400', 'text-yellow-400', 'text-blue-400', 'text-green-400', 'text-purple-400'];
 
@@ -606,7 +609,13 @@ export const ProductionLoader: React.FC<ProductionLoaderProps> = ({ progress, th
                 className="block w-full h-full cursor-none bg-black touch-none" 
              />
          ) : (
-             <div className="w-full h-full relative">
+             <div className="w-full h-full relative bg-black/20">
+                 {/* Mobile Performance Note */}
+                 {isMobile && (
+                     <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-black/40 px-3 py-1 rounded-full text-[10px] text-white/40 pointer-events-none">
+                         Mobile Optimized Mode
+                     </div>
+                 )}
                  {/* Background Elements */}
                  <div className="absolute inset-0 pointer-events-none opacity-20">
                      {isTargetPractice ? (

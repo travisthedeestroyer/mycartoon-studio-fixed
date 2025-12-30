@@ -457,7 +457,9 @@ const App: React.FC = () => {
                   if (i === 0) referenceImage = baseImg;
 
                   // Add significant delay between heavy generations to avoid rate limits
-                  await wait(2000, signal); 
+                  // Increased delay for mobile to prevent memory pressure
+                  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                  await wait(isMobile ? 4000 : 2000, signal); 
 
                   if (!isStatic) {
                       // Generate Video
