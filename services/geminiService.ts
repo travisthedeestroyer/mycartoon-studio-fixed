@@ -11,23 +11,29 @@ import { pcmToWav } from "../utils/audio";
 const DEFAULT_HF_TOKEN = process.env.HUGGINGFACE_API_KEY || '';
 
 // API Key Pool for rotation - loaded from environment variables
+// Supports both Vite's import.meta.env and process.env fallbacks
 const API_KEY_POOL = [
-    import.meta.env.VITE_GEMINI_API_KEY_1,
-    import.meta.env.VITE_GEMINI_API_KEY_2,
-    import.meta.env.VITE_GEMINI_API_KEY_3,
-    import.meta.env.VITE_GEMINI_API_KEY_4,
-    import.meta.env.VITE_GEMINI_API_KEY_5
-].filter(Boolean); // Remove undefined/empty keys
+    import.meta.env?.VITE_GEMINI_API_KEY_1 || process.env.VITE_GEMINI_API_KEY_1,
+    import.meta.env?.VITE_GEMINI_API_KEY_2 || process.env.VITE_GEMINI_API_KEY_2,
+    import.meta.env?.VITE_GEMINI_API_KEY_3 || process.env.VITE_GEMINI_API_KEY_3,
+    import.meta.env?.VITE_GEMINI_API_KEY_4 || process.env.VITE_GEMINI_API_KEY_4,
+    import.meta.env?.VITE_GEMINI_API_KEY_5 || process.env.VITE_GEMINI_API_KEY_5
+].filter(Boolean);
 
 let currentKeyIndex = 0;
 
 // Get current API key with rotation support
 const getCurrentApiKey = (): string => {
-    // Try environment key first (for AI Studio)
-    if (process.env.API_KEY) return process.env.API_KEY;
+    // Try environment key first (from define in vite.config.ts or direct process.env)
+    const primaryKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+    if (primaryKey) return primaryKey;
     
     // Otherwise use key pool
-    return API_KEY_POOL[currentKeyIndex % API_KEY_POOL.length];
+    if (API_KEY_POOL.length > 0) {
+        return API_KEY_POOL[currentKeyIndex % API_KEY_POOL.length];
+    }
+    
+    return '';
 };
 
 // Rotate to next API key
