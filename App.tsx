@@ -675,13 +675,9 @@ const App: React.FC = () => {
                             </div>
                         </div>
                         <button 
-                            onClick={() => {
-                                setIsPro(true);
-                                setWallet(w => w + 5000);
-                                setVeoTrials(v => v + 5);
-                                setShowSubscriptionModal(false);
-                                alert("Pro Pack Activated! 🎉");
-                            }}
+                                onClick={() => {
+                                    window.open('https://buy.stripe.com/test_4gM7sK9cq1cT8YDaF6gQE00', '_blank');
+                                }}
                             className="w-full py-3 bg-white text-black rounded-full font-black text-base hover:scale-105 active:scale-95 transition-transform"
                         >
                             Buy for $4.99
@@ -712,12 +708,7 @@ const App: React.FC = () => {
                         </div>
                         <button 
                             onClick={() => {
-                                setIsUltra(true);
-                                setWallet(w => w + 10000);
-                                setVeoTrials(v => v + 20);
-                                localStorage.setItem('tooncraft_is_ultra', 'true');
-                                setShowSubscriptionModal(false);
-                                alert("Ultra Pack Activated! 👑");
+                                window.open('https://buy.stripe.com/test_3cI9AScoCcVB8YD00sgQE01', '_blank');
                             }}
                             className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full font-black text-black text-lg hover:scale-105 active:scale-95 transition-transform shadow-lg"
                         >
