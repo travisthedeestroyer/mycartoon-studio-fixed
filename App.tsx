@@ -82,6 +82,11 @@ const App: React.FC = () => {
   const [lastImageGenTime, setLastImageGenTime] = useState<number>(0);
   const [dailyVideoCount, setDailyVideoCount] = useState(0);
   const [lastVideoResetTime, setLastVideoResetTime] = useState<number>(0);
+  const [userId] = useState(() => {
+      const id = localStorage.getItem('tooncraft_user_id') || 'guest_' + Math.random().toString(36).substr(2, 9);
+      if (!localStorage.getItem('tooncraft_user_id')) localStorage.setItem('tooncraft_user_id', id);
+      return id;
+  });
 
   // Economy & Shop State
   const [wallet, setWallet] = useState(0);
@@ -163,6 +168,45 @@ const App: React.FC = () => {
 
     getProjectsFromDB().then(setSavedProjects).catch(console.error);
   }, []);
+
+  // Sync with Supabase for payments
+  useEffect(() => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('payment') === 'success') {
+          alert("Payment Successful! Your pack is being activated...");
+          window.history.replaceState({}, '', window.location.pathname);
+          
+          const checkStatus = async () => {
+              try {
+                  // Using a direct fetch since we don't have the supabase client imported here yet
+                  // In a real app, we'd use the supabase client
+                  const { data, error } = await (window as any).supabase
+                      .from('users')
+                      .select('*')
+                      .eq('id', userId)
+                      .single();
+                  
+                  if (data) {
+                      setIsPro(data.is_pro);
+                      setIsUltra(data.is_ultra);
+                      setWallet(data.tokens);
+                      setVeoTrials(data.video_trials);
+                      
+                      localStorage.setItem('tooncraft_is_pro', data.is_pro.toString());
+                      localStorage.setItem('tooncraft_is_ultra', data.is_ultra.toString());
+                      localStorage.setItem('tooncraft_wallet', data.tokens.toString());
+                      localStorage.setItem('tooncraft_veo_trials', data.video_trials.toString());
+                  }
+              } catch (err) {
+                  console.error("Error syncing with Supabase:", err);
+              }
+          };
+          
+          checkStatus();
+          const interval = setInterval(checkStatus, 3000);
+          setTimeout(() => clearInterval(interval), 30000);
+      }
+  }, [userId]);
 
   const saveProject = async (scriptToSave: Script) => {
     const newProject = {
@@ -676,7 +720,15 @@ const App: React.FC = () => {
                         </div>
                         <button 
                                 onClick={() => {
-                                    window.open('https://buy.stripe.com/test_4gM7sK9cq1cT8YDaF6gQE00', '_blank');
+                                    // In a real app, we would use a unique user ID from Supabase Auth
+                                    const userId = localStorage.getItem('tooncraft_user_id') || 'guest_' + Math.random().toString(36).substr(2, 9);
+                                    if (!localStorage.getItem('tooncraft_user_id')) localStorage.setItem('tooncraft_user_id', userId);
+                                    
+                                    // Redirect to a Stripe Checkout session creation endpoint or use a Payment Link with prefilled data
+                                    // For simplicity with Payment Links, we can use URL parameters if configured, 
+                                    // but for production, a server-side session creation is better.
+                                    // Here we'll assume the user will be redirected to a session creation API route
+                                    window.location.href = `/api/create-checkout?pack=pro&userId=${userId}`;
                                 }}
                             className="w-full py-3 bg-white text-black rounded-full font-black text-base hover:scale-105 active:scale-95 transition-transform"
                         >
@@ -708,7 +760,9 @@ const App: React.FC = () => {
                         </div>
                         <button 
                             onClick={() => {
-                                window.open('https://buy.stripe.com/test_3cI9AScoCcVB8YD00sgQE01', '_blank');
+                                const userId = localStorage.getItem('tooncraft_user_id') || 'guest_' + Math.random().toString(36).substr(2, 9);
+                                if (!localStorage.getItem('tooncraft_user_id')) localStorage.setItem('tooncraft_user_id', userId);
+                                window.location.href = `/api/create-checkout?pack=ultra&userId=${userId}`;
                             }}
                             className="w-full py-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full font-black text-black text-lg hover:scale-105 active:scale-95 transition-transform shadow-lg"
                         >
