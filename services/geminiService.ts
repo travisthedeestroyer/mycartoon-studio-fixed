@@ -56,11 +56,9 @@ const MODEL_CONFIG = {
     ],
     // Fallback specifically for image if Gemini family fails
     imagen: 'imagen-4.0-generate-001',
-    // Video: Fallback chain: Fast Veo -> Veo 3.1 -> Veo 3.0 -> HF (Wan, LTX, SVD)
+    // Video: Fallback chain: Veo 3.1 -> Veo 3.0 -> HF (Wan, LTX, SVD)
     video: [
-        'veo-3.1-fast-generate-preview', 
         'veo-3.1-generate-preview',
-        'veo-3.0-generate-preview',
         'veo-3.0-generate-001',
         'hf:lightx2v/Wan2.2-Distill-Loras',
         'hf:Wan-AI/Wan2.2-I2V-A14B',
@@ -447,13 +445,15 @@ export const generateVeoVideo = async (prompt: string, imageBase64: string, sign
             operation = await ai.operations.getVideosOperation({ operation: operation });
         }
     
-        const downloadLink = operation.response?.generatedVideos?.[0]?.video?.uri;
-        if (!downloadLink) throw new Error("No video URI returned");
+        const videoFile = operation.response?.generatedVideos?.[0]?.video;
+        if (!videoFile?.uri) throw new Error("No video URI returned");
     
-        const url = new URL(downloadLink);
-        if (!url.searchParams.has('key')) url.searchParams.set('key', process.env.API_KEY || '');
+        // The URI is a File API URI, we need to use the download endpoint
+        // Correct format: https://generativelanguage.googleapis.com/v1beta/files/FILE_ID:download?alt=media&key=API_KEY
+        const fileId = videoFile.uri.split('/').pop();
+        const downloadUrl = `https://generativelanguage.googleapis.com/v1beta/files/${fileId}:download?alt=media&key=${getCurrentApiKey()}`;
         
-        const fetchResponse = await fetch(url.toString(), { signal });
+        const fetchResponse = await fetch(downloadUrl, { signal });
         if (!fetchResponse.ok) throw new Error(`Download failed: ${fetchResponse.status}`);
         
         const blob = await fetchResponse.blob();

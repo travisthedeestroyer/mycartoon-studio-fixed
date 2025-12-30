@@ -262,13 +262,14 @@ export const DirectorChat: React.FC<DirectorChatProps> = ({
 
         currentSessionPromise.current = sessionPromise;
 
-        const processor = audioContextRef.current.createScriptProcessor(4096, 1, 1);
-        processorRef.current = processor;
+        await audioContextRef.current.audioWorklet.addModule('/audio-processor.js');
+        const workletNode = new AudioWorkletNode(audioContextRef.current, 'audio-processor');
+        processorRef.current = workletNode as any;
         
-        processor.onaudioprocess = async (e) => {
+        workletNode.port.onmessage = async (event) => {
             if (!isSessionActiveRef.current) return;
 
-            const inputData = e.inputBuffer.getChannelData(0);
+            const inputData = event.data;
             
             let sum = 0;
             for(let i=0; i<inputData.length; i++) sum += inputData[i] * inputData[i];
@@ -300,8 +301,8 @@ export const DirectorChat: React.FC<DirectorChatProps> = ({
                 // Squelch errors if session failed to connect or was closed
             }
         };
-        source.connect(processor);
-        processor.connect(audioContextRef.current.destination);
+        source.connect(workletNode);
+        workletNode.connect(audioContextRef.current.destination);
 
       } catch (e) {
           console.error(e);
